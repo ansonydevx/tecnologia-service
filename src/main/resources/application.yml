@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: tecnologia-service
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/tecnologias_db
+    username: root
+    password: root
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
