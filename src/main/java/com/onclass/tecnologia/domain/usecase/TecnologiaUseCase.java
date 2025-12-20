@@ -7,6 +7,8 @@ import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.domain.spi.TecnologiaPersistencePort;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public class TecnologiaUseCase implements TecnologiaServicePort {
 
     private final TecnologiaPersistencePort persistencePort;
@@ -28,6 +30,12 @@ public class TecnologiaUseCase implements TecnologiaServicePort {
                                     return persistencePort.save(tecnologia);
                                 })
                 ));
+    }
+
+    @Override
+    public Mono<Boolean> existenPorIds(List<Long> ids) {
+        return persistencePort.countByIds(ids)
+                .map(count -> count == ids.size());
     }
 
     private Mono<Void> validar(Tecnologia t) {

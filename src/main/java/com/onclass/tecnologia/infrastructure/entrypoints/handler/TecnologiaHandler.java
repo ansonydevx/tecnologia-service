@@ -4,13 +4,19 @@ import com.onclass.tecnologia.domain.api.TecnologiaServicePort;
 import com.onclass.tecnologia.domain.enums.TechnicalMessage;
 import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaDTO;
+import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaExistsRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TecnologiaHandler {
@@ -25,5 +31,12 @@ public class TecnologiaHandler {
                 .flatMap(t -> ServerResponse
                         .status(HttpStatus.CREATED)
                         .bodyValue(TechnicalMessage.TECNOLOGIA_CREADA.getMessage()));
+    }
+
+    public Mono<ServerResponse> existen(ServerRequest request) {
+        return request.bodyToMono(TecnologiaExistsRequest.class)
+                .doOnNext(req -> log.info("IDs recibidos: {}", req.ids()))
+                .flatMap(req -> tecnologiaServicePort.existenPorIds(req.ids()))
+                .flatMap(result -> ServerResponse.ok().bodyValue(result));
     }
 }
