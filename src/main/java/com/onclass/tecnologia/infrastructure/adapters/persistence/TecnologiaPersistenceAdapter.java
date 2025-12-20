@@ -5,6 +5,7 @@ import com.onclass.tecnologia.domain.spi.TecnologiaPersistencePort;
 import com.onclass.tecnologia.infrastructure.adapters.persistence.mapper.TecnologiaEntityMapper;
 import com.onclass.tecnologia.infrastructure.adapters.persistence.repository.TecnologiaRepository;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -32,4 +33,12 @@ public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
         return repository.save(mapper.toEntity(tecnologia))
                 .map(mapper::toModel);
     }
+
+    @Override
+    public Flux<Tecnologia> findAllByIdIn(List<Long> ids) {
+        return repository.findAllByIdIn(ids)
+                .map(mapper::toModel);
+    }
+
+
 }
