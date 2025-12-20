@@ -5,6 +5,8 @@ import com.onclass.tecnologia.domain.enums.TechnicalMessage;
 import com.onclass.tecnologia.domain.exceptions.BusinessException;
 import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.domain.spi.TecnologiaPersistencePort;
+import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaResumenDTO;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -36,6 +38,16 @@ public class TecnologiaUseCase implements TecnologiaServicePort {
     public Mono<Boolean> existenPorIds(List<Long> ids) {
         return persistencePort.countByIds(ids)
                 .map(count -> count == ids.size());
+    }
+
+    @Override
+    public Flux<TecnologiaResumenDTO> obtenerPorIds(List<Long> ids) {
+        return persistencePort.findAllByIdIn(ids)
+                .map(tecnologia ->
+                        new TecnologiaResumenDTO(
+                                tecnologia.id(),
+                                tecnologia.nombre()
+                        ));
     }
 
     private Mono<Void> validar(Tecnologia t) {

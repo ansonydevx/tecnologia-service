@@ -5,6 +5,7 @@ import com.onclass.tecnologia.domain.enums.TechnicalMessage;
 import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaDTO;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaExistsRequest;
+import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaResumenDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -38,5 +39,16 @@ public class TecnologiaHandler {
                 .doOnNext(req -> log.info("IDs recibidos: {}", req.ids()))
                 .flatMap(req -> tecnologiaServicePort.existenPorIds(req.ids()))
                 .flatMap(result -> ServerResponse.ok().bodyValue(result));
+    }
+
+    public Mono<ServerResponse> obtenerPorIds(ServerRequest request) {
+        return request.bodyToFlux(Long.class)
+                .collectList()
+                .flatMap(ids ->
+                        ServerResponse.ok()
+                                .body(
+                                        tecnologiaServicePort.obtenerPorIds(ids),
+                                        TecnologiaResumenDTO.class
+                                ));
     }
 }

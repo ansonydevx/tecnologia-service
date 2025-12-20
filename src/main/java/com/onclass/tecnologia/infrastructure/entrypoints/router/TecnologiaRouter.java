@@ -15,6 +15,7 @@ public class TecnologiaRouter {
     @Bean
     public RouterFunction<ServerResponse> tecnologiaRoutes(TecnologiaHandler handler) {
         return route(POST("/tecnologias"), handler::registrar)
-                .andRoute(POST("/tecnologias/exists"), handler::existen);
+                .andRoute(POST("/tecnologias/exists"), handler::existen)
+                .andRoute(POST("/tecnologias/by-ids"), handler::obtenerPorIds);
     }
 }
