@@ -7,11 +7,18 @@ import com.onclass.tecnologia.infrastructure.adapters.persistence.repository.Tec
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
 
     private final TecnologiaRepository repository;
     private final TecnologiaEntityMapper mapper;
+
+    @Override
+    public Mono<Long> countByIds(List<Long> ids) {
+        return repository.countByIdIn(ids);
+    }
 
     @Override
     public Mono<Boolean> existsByNombre(String nombre) {

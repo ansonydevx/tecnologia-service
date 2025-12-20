@@ -13,8 +13,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class TecnologiaRouter {
 
     @Bean
-    public RouterFunction<ServerResponse> tecnologiaRoutes(
-            TecnologiaHandler handler) {
-        return route(POST("/tecnologias"), handler::registrar);
+    public RouterFunction<ServerResponse> tecnologiaRoutes(TecnologiaHandler handler) {
+        return route(POST("/tecnologias"), handler::registrar)
+                .andRoute(POST("/tecnologias/exists"), handler::existen);
     }
 }
