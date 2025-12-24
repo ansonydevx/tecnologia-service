@@ -24,8 +24,7 @@ public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
     @Override
     public Mono<Boolean> existsByNombre(String nombre) {
         return repository.findByNombre(nombre)
-                .map(e -> true)
-                .defaultIfEmpty(false);
+                .hasElement();
     }
 
     @Override
@@ -39,6 +38,4 @@ public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
         return repository.findAllByIdIn(ids)
                 .map(mapper::toModel);
     }
-
-
 }

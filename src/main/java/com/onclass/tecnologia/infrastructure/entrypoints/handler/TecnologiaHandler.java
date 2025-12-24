@@ -26,8 +26,7 @@ public class TecnologiaHandler {
 
     public Mono<ServerResponse> registrar(ServerRequest request) {
         return request.bodyToMono(TecnologiaDTO.class)
-                .map(dto -> new Tecnologia(
-                        null, dto.getNombre(), dto.getDescripcion()))
+                .map(dto -> new Tecnologia(null, dto.getNombre(), dto.getDescripcion()))
                 .flatMap(tecnologiaServicePort::registrar)
                 .flatMap(t -> ServerResponse
                         .status(HttpStatus.CREATED)
@@ -36,19 +35,16 @@ public class TecnologiaHandler {
 
     public Mono<ServerResponse> existen(ServerRequest request) {
         return request.bodyToMono(TecnologiaExistsRequest.class)
-                .doOnNext(req -> log.info("IDs recibidos: {}", req.ids()))
                 .flatMap(req -> tecnologiaServicePort.existenPorIds(req.ids()))
                 .flatMap(result -> ServerResponse.ok().bodyValue(result));
     }
 
     public Mono<ServerResponse> obtenerPorIds(ServerRequest request) {
-        return request.bodyToFlux(Long.class)
-                .collectList()
-                .flatMap(ids ->
-                        ServerResponse.ok()
-                                .body(
-                                        tecnologiaServicePort.obtenerPorIds(ids),
-                                        TecnologiaResumenDTO.class
-                                ));
+        return request.bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
+                .flatMap(ids -> ServerResponse.ok()
+                            .body(
+                                    tecnologiaServicePort.obtenerPorIds(ids),
+                                    TecnologiaResumenDTO.class
+                            ));
     }
 }

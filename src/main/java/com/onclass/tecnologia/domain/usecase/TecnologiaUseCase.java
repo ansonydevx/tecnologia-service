@@ -22,26 +22,26 @@ public class TecnologiaUseCase implements TecnologiaServicePort {
     @Override
     public Mono<Tecnologia> registrar(Tecnologia tecnologia) {
         return validar(tecnologia)
-                .then(Mono.defer(() ->
-                        persistencePort.existsByNombre(tecnologia.nombre())
-                                .flatMap(exists -> {
-                                    if (Boolean.TRUE.equals(exists)) {
-                                        return Mono.error(
-                                                new BusinessException(TechnicalMessage.TECNOLOGIA_DUPLICADA));
-                                    }
-                                    return persistencePort.save(tecnologia);
-                                })
-                ));
+                .flatMap(t -> verificarDuplicidad(t)
+                        .then(Mono.defer(() -> persistencePort.save(t))));
     }
 
     @Override
     public Mono<Boolean> existenPorIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Mono.just(false);
+        }
+
         return persistencePort.countByIds(ids)
-                .map(count -> count == ids.size());
+                .map(count -> count.equals((long) ids.size()));
     }
 
     @Override
     public Flux<TecnologiaResumenDTO> obtenerPorIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Flux.empty();
+        }
+
         return persistencePort.findAllByIdIn(ids)
                 .map(tecnologia ->
                         new TecnologiaResumenDTO(
@@ -50,14 +50,21 @@ public class TecnologiaUseCase implements TecnologiaServicePort {
                         ));
     }
 
-    private Mono<Void> validar(Tecnologia t) {
-        if (t.nombre() == null || t.nombre().length() > 50)
-            return Mono.error(new BusinessException(
-                    TechnicalMessage.NOMBRE_INVALIDO));
-        if (t.descripcion() == null || t.descripcion().length() > 90)
-            return Mono.error(new BusinessException(
-                    TechnicalMessage.DESCRIPCION_INVALIDA));
+    private Mono<Tecnologia> validar(Tecnologia t) {
+        if (t.nombre() == null || t.nombre().isEmpty() || t.nombre().length() > 50) {
+            return Mono.error(new BusinessException(TechnicalMessage.NOMBRE_INVALIDO));
+        }
+        if (t.descripcion() == null || t.descripcion().isEmpty() || t.descripcion().length() > 90) {
+            return Mono.error(new BusinessException(TechnicalMessage.DESCRIPCION_INVALIDA));
+        }
+        return Mono.just(t);
+    }
 
-        return Mono.empty();
+    private Mono<Void> verificarDuplicidad(Tecnologia t) {
+        return persistencePort.existsByNombre(t.nombre())
+                .flatMap(exists -> Boolean.TRUE.equals(exists)
+                        ? Mono.error(new BusinessException(TechnicalMessage.TECNOLOGIA_DUPLICADA))
+                        : Mono.empty()
+                );
     }
 }
