@@ -12,4 +12,6 @@ public interface TecnologiaPersistencePort {
     Mono<Boolean> existsByNombre(String nombre);
     Mono<Tecnologia> save(Tecnologia tecnologia);
     Flux<Tecnologia> findAllByIdIn(List<Long> ids);
+
+    Mono<Void> deleteById(Long id);
 }

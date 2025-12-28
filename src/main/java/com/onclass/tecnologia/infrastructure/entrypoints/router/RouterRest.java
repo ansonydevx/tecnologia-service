@@ -31,13 +31,20 @@ public class RouterRest {
                     beanClass = TecnologiaHandler.class,
                     beanMethod = "obtenerPorIds",
                     method = org.springframework.web.bind.annotation.RequestMethod.POST
-            )
+            ),
+            @RouterOperation(
+                    path = "/tecnologias/delete-by-ids",
+                    beanClass = TecnologiaHandler.class,
+                    beanMethod = "eliminarPorIds",
+                    method = org.springframework.web.bind.annotation.RequestMethod.POST
+            ),
     })
     public RouterFunction<ServerResponse> routerFunction(TecnologiaHandler handler) {
         return RouterFunctions.route()
                 .POST("/tecnologias", handler::registrar)
                 .POST("/tecnologias/exists", handler::existen)
                 .POST("/tecnologias/by-ids", handler::obtenerPorIds)
+                .POST("/tecnologias/delete-by-ids", handler::eliminarPorIds)
                 .build();
     }
 }

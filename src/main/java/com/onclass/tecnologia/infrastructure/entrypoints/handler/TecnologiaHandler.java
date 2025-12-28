@@ -3,6 +3,7 @@ package com.onclass.tecnologia.infrastructure.entrypoints.handler;
 import com.onclass.tecnologia.domain.api.TecnologiaServicePort;
 import com.onclass.tecnologia.domain.enums.TechnicalMessage;
 import com.onclass.tecnologia.domain.model.Tecnologia;
+import com.onclass.tecnologia.infrastructure.entrypoints.dto.IdsRequest;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaDTO;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaExistsRequest;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaResumenDTO;
@@ -46,5 +47,18 @@ public class TecnologiaHandler {
                                     tecnologiaServicePort.obtenerPorIds(ids),
                                     TecnologiaResumenDTO.class
                             ));
+    }
+
+    public Mono<ServerResponse> eliminarPorIds(ServerRequest request) {
+        return request.bodyToMono(IdsRequest.class)
+                .flatMap(req ->
+                        tecnologiaServicePort.eliminarPorIds(req.ids())
+                                .doOnError(ex ->
+                                        log.error("Error eliminando tecnologias: {}", ex.getMessage())
+                                )
+                )
+                .then(ServerResponse.noContent().build())
+                .onErrorResume(ex ->
+                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(ex.getMessage()));
     }
 }
