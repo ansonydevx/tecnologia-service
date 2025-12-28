@@ -12,4 +12,6 @@ public interface TecnologiaServicePort {
     Mono<Tecnologia> registrar(Tecnologia tecnologia);
     Mono<Boolean> existenPorIds(List<Long> ids);
     Flux<TecnologiaResumenDTO> obtenerPorIds(List<Long> ids);
+
+    Mono<Void> eliminarPorIds(List<Long> ids);
 }

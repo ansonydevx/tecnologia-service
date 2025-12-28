@@ -6,6 +6,7 @@ import com.onclass.tecnologia.domain.exceptions.BusinessException;
 import com.onclass.tecnologia.domain.model.Tecnologia;
 import com.onclass.tecnologia.domain.spi.TecnologiaPersistencePort;
 import com.onclass.tecnologia.infrastructure.entrypoints.dto.TecnologiaResumenDTO;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,9 +15,14 @@ import java.util.List;
 public class TecnologiaUseCase implements TecnologiaServicePort {
 
     private final TecnologiaPersistencePort persistencePort;
+    private final TransactionalOperator tx;
 
-    public TecnologiaUseCase(TecnologiaPersistencePort persistencePort) {
+    public TecnologiaUseCase(
+            TecnologiaPersistencePort persistencePort,
+            TransactionalOperator tx)
+    {
         this.persistencePort = persistencePort;
+        this.tx = tx;
     }
 
     @Override
@@ -49,6 +55,19 @@ public class TecnologiaUseCase implements TecnologiaServicePort {
                                 tecnologia.nombre()
                         ));
     }
+
+    @Override
+    public Mono<Void> eliminarPorIds(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return Mono.empty();
+        }
+
+        return Flux.fromIterable(ids)
+                .concatMap(persistencePort::deleteById)
+                .then()
+                .as(tx::transactional);
+    }
+
 
     private Mono<Tecnologia> validar(Tecnologia t) {
         if (t.nombre() == null || t.nombre().isEmpty() || t.nombre().length() > 50) {

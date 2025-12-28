@@ -9,6 +9,7 @@ import com.onclass.tecnologia.infrastructure.adapters.persistence.repository.Tec
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.reactive.TransactionalOperator;
 
 @Configuration
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class UseCasesConfig {
 
     private final TecnologiaRepository tecnologiaRepository;
     private final TecnologiaEntityMapper tecnologiaEntityMapper;
+    private final TransactionalOperator transactionalOperator;
 
     @Bean
     public TecnologiaPersistencePort tecnologiaPersistencePort() {
@@ -24,6 +26,6 @@ public class UseCasesConfig {
 
     @Bean
     public TecnologiaServicePort tecnologiaServicePort(TecnologiaPersistencePort tecnologiaPersistencePort) {
-        return new TecnologiaUseCase(tecnologiaPersistencePort);
+        return new TecnologiaUseCase(tecnologiaPersistencePort, transactionalOperator);
     }
 }

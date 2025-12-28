@@ -38,4 +38,9 @@ public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
         return repository.findAllByIdIn(ids)
                 .map(mapper::toModel);
     }
+
+    @Override
+    public Mono<Void> deleteById(Long id) {
+        return repository.deleteById(id);
+    }
 }
