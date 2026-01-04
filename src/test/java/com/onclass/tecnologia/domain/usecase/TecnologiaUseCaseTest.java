@@ -60,7 +60,7 @@ class TecnologiaUseCaseTest {
     }
 
     @Test
-    void debeFallarSiDescripcionMayorA90() {
+    void deberiaFallarSiDescripcionMayorA90() {
         String desc = "a".repeat(91);
         Tecnologia t = new Tecnologia(null, "Java", desc);
 
@@ -73,7 +73,7 @@ class TecnologiaUseCaseTest {
     }
 
     @Test
-    void debeFallarSiTecnologiaDuplicada() {
+    void deberiaFallarSiTecnologiaDuplicada() {
         Tecnologia t = new Tecnologia(null, "Java", "desc");
 
         when(persistencePort.existsByNombre("Java"))
