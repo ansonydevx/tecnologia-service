@@ -18,7 +18,7 @@ public class RouterRest {
                     path = "/tecnologias",
                     beanClass = TecnologiaHandler.class,
                     beanMethod = "registrar",
-                    method = org.springframework.web.bind.annotation.RequestMethod.POST,
+                    method = org.springframework.web.bind.annotation.RequestMethod.POST
             ),
             @RouterOperation(
                     path = "/tecnologias/exists",

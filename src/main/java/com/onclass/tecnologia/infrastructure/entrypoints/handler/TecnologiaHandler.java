@@ -31,7 +31,7 @@ public class TecnologiaHandler {
                 .flatMap(tecnologiaServicePort::registrar)
                 .flatMap(t -> ServerResponse
                         .status(HttpStatus.CREATED)
-                        .bodyValue(TechnicalMessage.TECNOLOGIA_CREADA.getMessage()));
+                        .bodyValue(t));
     }
 
     public Mono<ServerResponse> existen(ServerRequest request) {
