@@ -7,7 +7,6 @@ import com.onclass.tecnologia.domain.spi.TecnologiaPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -17,17 +16,12 @@ class TecnologiaUseCaseTest {
 
     private TecnologiaPersistencePort persistencePort;
     private TecnologiaUseCase useCase;
-    private TransactionalOperator tx;
 
     @BeforeEach
     void setup() {
         persistencePort = Mockito.mock(TecnologiaPersistencePort.class);
-        tx = Mockito.mock(TransactionalOperator.class);
 
-        when(tx.transactional(Mockito.<Mono<?>>any()))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        useCase = new TecnologiaUseCase(persistencePort, tx);
+        useCase = new TecnologiaUseCase(persistencePort);
     }
 
     @Test

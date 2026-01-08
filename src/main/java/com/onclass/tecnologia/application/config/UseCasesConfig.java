@@ -26,6 +26,6 @@ public class UseCasesConfig {
 
     @Bean
     public TecnologiaServicePort tecnologiaServicePort(TecnologiaPersistencePort tecnologiaPersistencePort) {
-        return new TecnologiaUseCase(tecnologiaPersistencePort, transactionalOperator);
+        return new TecnologiaUseCase(tecnologiaPersistencePort);
     }
 }

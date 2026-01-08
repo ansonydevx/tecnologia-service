@@ -13,5 +13,5 @@ public interface TecnologiaPersistencePort {
     Mono<Tecnologia> save(Tecnologia tecnologia);
     Flux<Tecnologia> findAllByIdIn(List<Long> ids);
 
-    Mono<Void> deleteById(Long id);
+    Mono<Void> deleteAllById(List<Long> ids);
 }

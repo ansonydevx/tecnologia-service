@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -24,10 +25,14 @@ import java.util.List;
 public class TecnologiaHandler {
 
     private final TecnologiaServicePort tecnologiaServicePort;
+    private final TransactionalOperator tx;
 
     public Mono<ServerResponse> registrar(ServerRequest request) {
         return request.bodyToMono(TecnologiaDTO.class)
-                .map(dto -> new Tecnologia(null, dto.getNombre(), dto.getDescripcion()))
+                .map(dto -> new Tecnologia(
+                        null,
+                        dto.getNombre(),
+                        dto.getDescripcion()))
                 .flatMap(tecnologiaServicePort::registrar)
                 .flatMap(t -> ServerResponse
                         .status(HttpStatus.CREATED)
@@ -43,22 +48,19 @@ public class TecnologiaHandler {
     public Mono<ServerResponse> obtenerPorIds(ServerRequest request) {
         return request.bodyToMono(new ParameterizedTypeReference<List<Long>>() {})
                 .flatMap(ids -> ServerResponse.ok()
-                            .body(
-                                    tecnologiaServicePort.obtenerPorIds(ids),
-                                    TecnologiaResumenDTO.class
-                            ));
+                            .body(tecnologiaServicePort.obtenerPorIds(ids), TecnologiaResumenDTO.class));
     }
 
     public Mono<ServerResponse> eliminarPorIds(ServerRequest request) {
         return request.bodyToMono(IdsRequest.class)
                 .flatMap(req ->
                         tecnologiaServicePort.eliminarPorIds(req.ids())
-                                .doOnError(ex ->
-                                        log.error("Error eliminando tecnologias: {}", ex.getMessage())
-                                )
+                                .as(tx::transactional)
+                                .doOnError(ex -> log.error("Error eliminando tecnologias: {}", ex.getMessage()))
                 )
                 .then(ServerResponse.noContent().build())
                 .onErrorResume(ex ->
-                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).bodyValue(ex.getMessage()));
+                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .bodyValue(ex.getMessage()));
     }
 }

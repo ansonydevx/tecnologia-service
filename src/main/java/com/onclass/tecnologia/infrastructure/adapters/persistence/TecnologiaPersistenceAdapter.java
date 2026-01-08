@@ -5,6 +5,7 @@ import com.onclass.tecnologia.domain.spi.TecnologiaPersistencePort;
 import com.onclass.tecnologia.infrastructure.adapters.persistence.mapper.TecnologiaEntityMapper;
 import com.onclass.tecnologia.infrastructure.adapters.persistence.repository.TecnologiaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +16,7 @@ public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
 
     private final TecnologiaRepository repository;
     private final TecnologiaEntityMapper mapper;
+//    private final TransactionalOperator tx;
 
     @Override
     public Mono<Long> countByIds(List<Long> ids) {
@@ -40,7 +42,7 @@ public class TecnologiaPersistenceAdapter implements TecnologiaPersistencePort {
     }
 
     @Override
-    public Mono<Void> deleteById(Long id) {
-        return repository.deleteById(id);
+    public Mono<Void> deleteAllById(List<Long> ids) {
+        return repository.deleteAllById(ids);
     }
 }
